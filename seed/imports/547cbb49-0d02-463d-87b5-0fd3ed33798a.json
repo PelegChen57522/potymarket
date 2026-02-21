@@ -1,0 +1,516 @@
+{
+  "importId": "547cbb49-0d02-463d-87b5-0fd3ed33798a",
+  "uploadedAt": "2026-02-21T17:44:01.773Z",
+  "fileName": "_chat 2.txt",
+  "fileSize": 464365,
+  "model": "manual-curated-bottom-focused-v3",
+  "rawTextPath": "data/raw/547cbb49-0d02-463d-87b5-0fd3ed33798a.txt",
+  "markets": [
+    {
+      "id": "curatedv3-131547e537b6",
+      "slug": "will-peleg-chen-open-the-next-meetup-thread-with-place-time",
+      "title": "Will Peleg Chen open the next meetup thread with place+time?",
+      "description": "Organizer-lead market weighted to newest planning behavior.",
+      "category": "Friends",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if Peleg Chen is first to post a concrete next meetup time and venue.",
+      "close_time_guess": "2026-02-28T18:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.58
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.42
+        }
+      ],
+      "scores": {
+        "creativity": 0.86,
+        "clarity": 0.91,
+        "evidence": 0.9,
+        "fun": 0.81
+      },
+      "evidence": [
+        {
+          "quote": "אז בואו נקבע ב10",
+          "approx_time": "2026-02-19T21:20:52.000Z"
+        },
+        {
+          "quote": "מחר בערב בשולי לוצי ב 22:30 במקום הוזמן ל 8 אנשים יש 1+1 על האלכוהול מה שאומר שמדובר בערב קצה ממליץ להגיע לכבוד יום הולדתי כאחד מזקני השבט 🥳😯",
+          "approx_time": "2026-02-19T13:12:37.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-772aafb11301",
+      "slug": "will-the-final-venue-switch-after-first-lock",
+      "title": "Will the final venue switch after first lock?",
+      "description": "Captures the group’s recurring “lock then pivot” location pattern.",
+      "category": "Plans",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if venue changes after the first clear location lock in the same planning cycle.",
+      "close_time_guess": "2026-03-01T19:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.61
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.39
+        }
+      ],
+      "scores": {
+        "creativity": 0.81,
+        "clarity": 0.89,
+        "evidence": 0.89,
+        "fun": 0.78
+      },
+      "evidence": [
+        {
+          "quote": "טוב עזבו נשאיר תל אביב",
+          "approx_time": "2026-02-13T16:55:15.000Z"
+        },
+        {
+          "quote": "לבוא לכצנלסון?",
+          "approx_time": "2026-02-20T22:03:48.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-603e278ad16a",
+      "slug": "will-reservation-capacity-be-expanded-again-before-start-time",
+      "title": "Will reservation capacity be expanded again before start time?",
+      "description": "High-signal logistics market based on recent seat expansion messages.",
+      "category": "Logistics",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if any message requests adding seats/expanding reservation before meetup start.",
+      "close_time_guess": "2026-03-02T20:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.77
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.23
+        }
+      ],
+      "scores": {
+        "creativity": 0.8,
+        "clarity": 0.93,
+        "evidence": 0.94,
+        "fun": 0.75
+      },
+      "evidence": [
+        {
+          "quote": "הרחבתי ל12 מקומות בצהריים",
+          "approx_time": "2026-02-20T20:03:15.000Z"
+        },
+        {
+          "quote": "ניסיתי מהצהריים להרחיב את השולחן והם לא עונים משום מה אנסה שוב לקראת הערב במקסימום מי שמגיע ראשון ויכול לבקש להוסיף שני כיסאות תבוא עליו הברכה❤️",
+          "approx_time": "2026-02-20T18:45:02.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-d707442a8de7",
+      "slug": "will-someone-flip-from-coming-to-not-coming-late",
+      "title": "Will someone flip from “coming” to “not coming” late?",
+      "description": "Late churn risk market for final-hour attendance instability.",
+      "category": "Chaos",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if a participant posts a positive/maybe signal and then cancels within 3 hours of meetup.",
+      "close_time_guess": "2026-03-03T21:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.64
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.36
+        }
+      ],
+      "scores": {
+        "creativity": 0.82,
+        "clarity": 0.87,
+        "evidence": 0.88,
+        "fun": 0.82
+      },
+      "evidence": [
+        {
+          "quote": "מאמין שאוכל לקפוץ",
+          "approx_time": "2026-02-19T15:54:29.000Z"
+        },
+        {
+          "quote": "לא אגיע לצערי",
+          "approx_time": "2026-02-19T21:56:47.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-1a1203d335d2",
+      "slug": "will-a-givatayim-carpool-leave-with-all-seats-filled",
+      "title": "Will a Givatayim carpool leave with all seats filled?",
+      "description": "Transport market tied to explicit seat-offer patterns.",
+      "category": "Logistics",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if a Givatayim departure offer is posted and all advertised seats are claimed in thread.",
+      "close_time_guess": "2026-03-04T18:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.69
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.31
+        }
+      ],
+      "scores": {
+        "creativity": 0.85,
+        "clarity": 0.9,
+        "evidence": 0.91,
+        "fun": 0.8
+      },
+      "evidence": [
+        {
+          "quote": "אני מוציא רכב מגבעתיים בעשרה ל22 יש לי 4 מקומות הזמן לא גמיש כי 22:30 אנחנו שם מי שרוצה שיכתוב פה אני לא זמין בפרטי",
+          "approx_time": "2026-02-20T20:23:12.000Z"
+        },
+        {
+          "quote": "יצאתי פלג אתה ראשון",
+          "approx_time": "2026-02-20T22:03:33.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-02e0e3057f26",
+      "slug": "will-final-meetup-time-drift-later-than-the-first-suggested-hour",
+      "title": "Will final meetup time drift later than the first suggested hour?",
+      "description": "Time drift market from recurring 21:30→22:00→22:30 negotiation.",
+      "category": "Tonight",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if final agreed start hour is later than the first stated start hour.",
+      "close_time_guess": "2026-03-05T19:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.66
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.34
+        }
+      ],
+      "scores": {
+        "creativity": 0.84,
+        "clarity": 0.9,
+        "evidence": 0.9,
+        "fun": 0.78
+      },
+      "evidence": [
+        {
+          "quote": "בואו ב2130 זה בא לי טוב אחריי העבודה",
+          "approx_time": "2026-02-19T18:55:44.000Z"
+        },
+        {
+          "quote": "אני מוציא רכב מגבעתיים בעשרה ל22 יש לי 4 מקומות הזמן לא גמיש כי 22:30 אנחנו שם מי שרוצה שיכתוב פה אני לא זמין בפרטי",
+          "approx_time": "2026-02-20T20:23:12.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-e8de8d00ed66",
+      "slug": "will-there-be-a-same-night-main-plan-after-party-split",
+      "title": "Will there be a same-night “main plan + after party” split?",
+      "description": "Creative but realistic two-stage night-flow market.",
+      "category": "Weekend",
+      "market_type": "YES_NO",
+      "resolution_criteria": "Resolves YES if group plans a main meetup and explicit second-stage party/after-plan for same night.",
+      "close_time_guess": "2026-03-06T20:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Yes",
+          "initial_probability": 0.52
+        },
+        {
+          "label": "No",
+          "initial_probability": 0.48
+        }
+      ],
+      "scores": {
+        "creativity": 0.9,
+        "clarity": 0.82,
+        "evidence": 0.84,
+        "fun": 0.88
+      },
+      "evidence": [
+        {
+          "quote": "רוצים ללכת למסיבה אחרי?",
+          "approx_time": "2026-02-20T11:00:21.000Z"
+        },
+        {
+          "quote": "יציאה כאילו אחי",
+          "approx_time": "2026-02-19T21:34:06.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-617e64f9083e",
+      "slug": "how-many-explicit-confirmations-by-20-00-on-meetup-day",
+      "title": "How many explicit confirmations by 20:00 on meetup day?",
+      "description": "Commitment depth before transport and seat logistics start.",
+      "category": "Attendance",
+      "market_type": "NUMERIC",
+      "resolution_criteria": "Resolves to bucket by count of unique confirmation messages by 20:00 local time.",
+      "close_time_guess": "2026-03-07T21:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "0-4",
+          "initial_probability": 0.18
+        },
+        {
+          "label": "5-7",
+          "initial_probability": 0.47
+        },
+        {
+          "label": "8+",
+          "initial_probability": 0.35
+        }
+      ],
+      "scores": {
+        "creativity": 0.74,
+        "clarity": 0.92,
+        "evidence": 0.87,
+        "fun": 0.74
+      },
+      "evidence": [
+        {
+          "quote": "סקר: שישי אתה בא אפשרות: כן עם בת זוג (0 הצבעות) אפשרות: כן (7 הצבעות) אפשרות: לא אבל אולי כן (0 הצבעות)",
+          "approx_time": "2026-02-18T12:08:36.000Z"
+        },
+        {
+          "quote": "אני גם אשמח",
+          "approx_time": "2026-02-20T21:03:17.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-69c355c09951",
+      "slug": "how-many-movement-updates-in-the-final-hour",
+      "title": "How many movement updates (“בדרך / יצאתי / אני פה”) in the final hour?",
+      "description": "Operational traffic around arrival in the last-mile window.",
+      "category": "Chaos",
+      "market_type": "NUMERIC",
+      "resolution_criteria": "Resolves to bucket by count of movement/arrival updates in the final 60 minutes.",
+      "close_time_guess": "2026-02-28T18:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "0-2",
+          "initial_probability": 0.16
+        },
+        {
+          "label": "3-5",
+          "initial_probability": 0.53
+        },
+        {
+          "label": "6+",
+          "initial_probability": 0.31
+        }
+      ],
+      "scores": {
+        "creativity": 0.8,
+        "clarity": 0.9,
+        "evidence": 0.91,
+        "fun": 0.82
+      },
+      "evidence": [
+        {
+          "quote": "יצאתי פלג אתה ראשון",
+          "approx_time": "2026-02-20T22:03:33.000Z"
+        },
+        {
+          "quote": "אני פה",
+          "approx_time": "2026-02-19T22:08:14.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-782e914718b8",
+      "slug": "how-many-distinct-venue-candidates-will-be-debated-before-lock",
+      "title": "How many distinct venue candidates will be debated before lock?",
+      "description": "Decision-complexity market for place selection.",
+      "category": "Plans",
+      "market_type": "NUMERIC",
+      "resolution_criteria": "Resolves to bucket by number of distinct place options discussed before final venue lock.",
+      "close_time_guess": "2026-03-01T19:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "1-2",
+          "initial_probability": 0.26
+        },
+        {
+          "label": "3-4",
+          "initial_probability": 0.5
+        },
+        {
+          "label": "5+",
+          "initial_probability": 0.24
+        }
+      ],
+      "scores": {
+        "creativity": 0.85,
+        "clarity": 0.85,
+        "evidence": 0.88,
+        "fun": 0.8
+      },
+      "evidence": [
+        {
+          "quote": "הזקן והים הדרדרו ממש לפחות הסניף בטיילת",
+          "approx_time": "2026-02-19T12:21:54.000Z"
+        },
+        {
+          "quote": "לבוא לכצנלסון?",
+          "approx_time": "2026-02-20T22:03:48.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-b2cf11e04de7",
+      "slug": "which-area-will-host-the-next-main-meetup",
+      "title": "Which area will host the next main meetup?",
+      "description": "Area forecast anchored to newest location arguments.",
+      "category": "Other",
+      "market_type": "MULTIPLE_CHOICE",
+      "resolution_criteria": "Resolves to area of the final venue written in chat.",
+      "close_time_guess": "2026-03-02T20:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Tel Aviv",
+          "initial_probability": 0.45
+        },
+        {
+          "label": "Givatayim",
+          "initial_probability": 0.41
+        },
+        {
+          "label": "Other",
+          "initial_probability": 0.14
+        }
+      ],
+      "scores": {
+        "creativity": 0.84,
+        "clarity": 0.91,
+        "evidence": 0.9,
+        "fun": 0.8
+      },
+      "evidence": [
+        {
+          "quote": "טוב עזבו נשאיר תל אביב",
+          "approx_time": "2026-02-13T16:55:15.000Z"
+        },
+        {
+          "quote": "אין לי בעיה גבעתיים",
+          "approx_time": "2026-02-13T16:47:59.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-8f1d091ba8bf",
+      "slug": "who-will-post-the-final-lock-in-message",
+      "title": "Who will post the final lock-in message?",
+      "description": "Endgame ownership market for final confirmed plan.",
+      "category": "Friends",
+      "market_type": "MULTIPLE_CHOICE",
+      "resolution_criteria": "Resolves to the person posting the final clear lock-in message (time + place).",
+      "close_time_guess": "2026-03-03T21:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "Peleg Chen",
+          "initial_probability": 0.35
+        },
+        {
+          "label": "עומר יוסף",
+          "initial_probability": 0.3
+        },
+        {
+          "label": "מעיין באר",
+          "initial_probability": 0.2
+        },
+        {
+          "label": "Someone else",
+          "initial_probability": 0.15
+        }
+      ],
+      "scores": {
+        "creativity": 0.88,
+        "clarity": 0.86,
+        "evidence": 0.86,
+        "fun": 0.84
+      },
+      "evidence": [
+        {
+          "quote": "סבבה עשר שם",
+          "approx_time": "2026-02-19T21:21:47.000Z"
+        },
+        {
+          "quote": "מחר בערב בשולי לוצי ב 22:30 במקום הוזמן ל 8 אנשים יש 1+1 על האלכוהול מה שאומר שמדובר בערב קצה ממליץ להגיע לכבוד יום הולדתי כאחד מזקני השבט 🥳😯",
+          "approx_time": "2026-02-19T13:12:37.000Z"
+        }
+      ]
+    },
+    {
+      "id": "curatedv3-e7d6c3efd8a4",
+      "slug": "what-final-start-time-bucket-will-be-locked",
+      "title": "What final start-time bucket will be locked?",
+      "description": "Time-bucket showdown based on repeated late-evening shifts.",
+      "category": "Tonight",
+      "market_type": "MULTIPLE_CHOICE",
+      "resolution_criteria": "Resolves to final agreed start-time bucket in chat.",
+      "close_time_guess": "2026-03-04T18:00:00.000Z",
+      "outcomes": [
+        {
+          "label": "21:00-21:29",
+          "initial_probability": 0.14
+        },
+        {
+          "label": "21:30-21:59",
+          "initial_probability": 0.34
+        },
+        {
+          "label": "22:00-22:30",
+          "initial_probability": 0.52
+        }
+      ],
+      "scores": {
+        "creativity": 0.83,
+        "clarity": 0.91,
+        "evidence": 0.9,
+        "fun": 0.8
+      },
+      "evidence": [
+        {
+          "quote": "יאללה רבע לעשר שם",
+          "approx_time": "2026-02-19T21:05:57.000Z"
+        },
+        {
+          "quote": "אני מוציא רכב מגבעתיים בעשרה ל22 יש לי 4 מקומות הזמן לא גמיש כי 22:30 אנחנו שם מי שרוצה שיכתוב פה אני לא זמין בפרטי",
+          "approx_time": "2026-02-20T20:23:12.000Z"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "focus": "bottom-most updates prioritized; repetitive markets removed",
+    "sourceMessages": 5820,
+    "recencyWindow": 700,
+    "keptMarketCount": 13,
+    "leaders": [
+      "Peleg Chen",
+      "עומר יוסף"
+    ]
+  }
+}

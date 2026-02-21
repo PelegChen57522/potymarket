@@ -5,6 +5,7 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { GeneratedMarketIdea } from "@/lib/llm/schema";
+import seededImport547 from "@/seed/imports/547cbb49-0d02-463d-87b5-0fd3ed33798a.json";
 
 function resolveDataDir() {
   const configuredDir = process.env.ORTIMARKET_DATA_DIR?.trim();
@@ -142,6 +143,11 @@ function normalizeStoredImport(raw: unknown): StoredImport | null {
   };
 }
 
+const SEEDED_IMPORTS: StoredImport[] = (() => {
+  const normalized = normalizeStoredImport(seededImport547 as unknown);
+  return normalized ? [normalized] : [];
+})();
+
 async function readImportFile(filePath: string): Promise<StoredImport | null> {
   try {
     const raw = await readFile(filePath, "utf8");
@@ -225,20 +231,28 @@ export async function getImportById(importId: string): Promise<StoredImport | nu
   if (!IMPORT_ID_PATTERN.test(importId)) {
     return null;
   }
-  return readImportFile(importJsonPath(importId));
+
+  const fromDisk = await readImportFile(importJsonPath(importId));
+  if (fromDisk) {
+    return fromDisk;
+  }
+
+  return SEEDED_IMPORTS.find((entry) => entry.importId === importId) ?? null;
 }
 
 export async function getLatestImport(): Promise<StoredImport | null> {
   await ensureStorageDirs();
 
   const files = await readdir(IMPORTS_DIR);
-  const imports = (
+  const runtimeImports = (
     await Promise.all(
       files
         .filter((fileName) => fileName.endsWith(".json"))
         .map((fileName) => readImportFile(path.join(IMPORTS_DIR, fileName)))
     )
   ).filter((entry): entry is StoredImport => Boolean(entry));
+
+  const imports = [...runtimeImports, ...SEEDED_IMPORTS];
 
   if (imports.length === 0) {
     console.log("[storage] getLatestImport:none", { dataDir: DATA_DIR });
