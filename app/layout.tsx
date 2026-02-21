@@ -6,7 +6,17 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "potymarket",
-  description: "Prediction market UX/UI prototype"
+  description: "פלטפורמת שוקי חיזוי לחבורת ילד גלידה, עם יצירת מרקטים מצ'אט וואטסאפ וטריידים בכסף משחק.",
+  openGraph: {
+    title: "potymarket",
+    description: "פלטפורמת שוקי חיזוי לחבורת ילד גלידה, עם יצירת מרקטים מצ'אט וואטסאפ וטריידים בכסף משחק.",
+    type: "website"
+  },
+  twitter: {
+    card: "summary",
+    title: "potymarket",
+    description: "פלטפורמת שוקי חיזוי לחבורת ילד גלידה, עם יצירת מרקטים מצ'אט וואטסאפ וטריידים בכסף משחק."
+  }
 };
 
 export default function RootLayout({
