@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, CheckCircle2, FileText, Loader2, UploadCloud } from "lucide-react";
 
 import { ExportHelpDialog } from "@/components/upload/export-help-dialog";
@@ -41,8 +42,10 @@ function formatTimestamp(value: Date) {
 }
 
 export function UploadFlowCard() {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const requestRef = useRef<AbortController | null>(null);
 
   const [state, setState] = useState<UploadState>("idle");
   const [progress, setProgress] = useState(0);
@@ -57,8 +60,16 @@ export function UploadFlowCard() {
     }
   };
 
+  const abortRequest = () => {
+    if (requestRef.current) {
+      requestRef.current.abort();
+      requestRef.current = null;
+    }
+  };
+
   const resetToIdle = () => {
     clearUploadTimer();
+    abortRequest();
     setState("idle");
     setProgress(0);
     setErrorMessage("");
@@ -68,31 +79,42 @@ export function UploadFlowCard() {
     }
   };
 
-  const startMockUpload = (file: File) => {
+  const startProgressSimulation = () => {
     clearUploadTimer();
-    setState("uploading");
-    setProgress(0);
-    setErrorMessage("");
-
     let current = 0;
+
     timerRef.current = setInterval(() => {
       current += 4;
-      const next = Math.min(100, current);
+      const next = Math.min(current, 95);
       setProgress(next);
 
-      if (next >= 100) {
+      if (next >= 95) {
         clearUploadTimer();
-        setFileMeta({
-          name: file.name,
-          size: file.size,
-          uploadedAt: new Date()
-        });
-        setState("success");
       }
     }, 100);
   };
 
-  const handleSelectAndUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const submitFile = async (file: File) => {
+    const controller = new AbortController();
+    requestRef.current = controller;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/import/whatsapp", {
+      method: "POST",
+      body: formData,
+      signal: controller.signal
+    });
+
+    const payload = (await response.json().catch(() => ({}))) as { error?: string; ok?: boolean; importId?: string };
+
+    if (!response.ok || !payload.ok || !payload.importId) {
+      throw new Error(payload.error ?? "Failed to upload WhatsApp export.");
+    }
+  };
+
+  const handleSelectAndUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
       return;
@@ -101,18 +123,47 @@ export function UploadFlowCard() {
     const isTxtFile = /\.txt$/i.test(file.name) || file.type === "text/plain";
 
     if (!isTxtFile) {
-      clearUploadTimer();
       setState("error");
       setProgress(0);
       setErrorMessage("Please select a .txt WhatsApp export file.");
       return;
     }
 
-    startMockUpload(file);
+    setState("uploading");
+    setProgress(0);
+    setErrorMessage("");
+    setFileMeta(null);
+    startProgressSimulation();
+
+    try {
+      await submitFile(file);
+      clearUploadTimer();
+      setProgress(100);
+      setState("success");
+      setFileMeta({ name: file.name, size: file.size, uploadedAt: new Date() });
+
+      window.setTimeout(() => {
+        router.push("/?imported=1");
+      }, 650);
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        return;
+      }
+
+      clearUploadTimer();
+      setProgress(0);
+      setState("error");
+      setErrorMessage(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      requestRef.current = null;
+    }
   };
 
   useEffect(() => {
-    return () => clearUploadTimer();
+    return () => {
+      clearUploadTimer();
+      abortRequest();
+    };
   }, []);
 
   return (
@@ -157,7 +208,7 @@ export function UploadFlowCard() {
                 <div className="mb-2 flex items-center justify-between text-sm">
                   <span className="inline-flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading...
+                    Uploading and generating markets...
                   </span>
                   <span className="font-medium text-foreground">{progress}%</span>
                 </div>
@@ -183,7 +234,7 @@ export function UploadFlowCard() {
 
               <div>
                 <h3 className="text-lg font-semibold">Upload complete</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Your file is ready for the next step.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Redirecting to generated markets…</p>
               </div>
 
               <div className="rounded-xl border border-border/70 bg-muted/35 p-3 text-left text-sm">
@@ -195,14 +246,8 @@ export function UploadFlowCard() {
                 <p className="text-muted-foreground">Uploaded: {formatTimestamp(fileMeta.uploadedAt)}</p>
               </div>
 
-              <Button
-                className="h-14 w-full rounded-xl text-base font-semibold active:scale-[0.985]"
-                onClick={() => {
-                  resetToIdle();
-                  inputRef.current?.click();
-                }}
-              >
-                Upload another
+              <Button className="h-14 w-full rounded-xl text-base font-semibold" onClick={() => router.push("/?imported=1")}>
+                Continue to markets
               </Button>
             </div>
           ) : null}

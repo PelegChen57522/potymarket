@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import { MarketCard } from "@/components/markets/market-card";
-import { MarketCardSkeleton } from "@/components/markets/market-card-skeleton";
 import { SiteHeader } from "@/components/markets/site-header";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -16,24 +17,28 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrencyCompact } from "@/lib/format";
-import { browseTabs, markets, topicChips } from "@/lib/mockMarkets";
+import type { DisplayMarket } from "@/lib/markets";
 import { cn } from "@/lib/utils";
 
+const browseTabs = ["New", "Trending", "Popular", "Liquid", "Ending Soon", "Competitive"] as const;
 const sortOptions = ["24h Volume", "Newest", "Closing soon"] as const;
 
 type BrowseTab = (typeof browseTabs)[number];
 type SortOption = (typeof sortOptions)[number];
 
+type BrowsePageProps = {
+  markets: DisplayMarket[];
+  bannerMessage?: string | null;
+};
+
 function tabComparator(tab: BrowseTab) {
-  return (a: (typeof markets)[number], b: (typeof markets)[number]) => {
+  return (a: DisplayMarket, b: DisplayMarket) => {
     if (tab === "New") {
       return Number(b.isNew) - Number(a.isNew) || +new Date(b.closesAt) - +new Date(a.closesAt);
     }
 
     if (tab === "Trending") {
-      const trendA = a.volume24h * (a.isLive ? 1.2 : 1) * (a.isNew ? 1.1 : 1);
-      const trendB = b.volume24h * (b.isLive ? 1.2 : 1) * (b.isNew ? 1.1 : 1);
-      return trendB - trendA;
+      return b.volume24h - a.volume24h;
     }
 
     if (tab === "Popular") {
@@ -54,29 +59,32 @@ function tabComparator(tab: BrowseTab) {
 
 function sortComparator(sortBy: SortOption) {
   if (sortBy === "Newest") {
-    return (a: (typeof markets)[number], b: (typeof markets)[number]) =>
+    return (a: DisplayMarket, b: DisplayMarket) =>
       Number(b.isNew) - Number(a.isNew) || +new Date(b.closesAt) - +new Date(a.closesAt);
   }
 
   if (sortBy === "Closing soon") {
-    return (a: (typeof markets)[number], b: (typeof markets)[number]) => +new Date(a.closesAt) - +new Date(b.closesAt);
+    return (a: DisplayMarket, b: DisplayMarket) => +new Date(a.closesAt) - +new Date(b.closesAt);
   }
 
-  return (a: (typeof markets)[number], b: (typeof markets)[number]) => b.volume24h - a.volume24h;
+  return (a: DisplayMarket, b: DisplayMarket) => b.volume24h - a.volume24h;
 }
 
-export function BrowsePage() {
+export function BrowsePage({ markets, bannerMessage }: BrowsePageProps) {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<BrowseTab>("Trending");
-  const [activeTopic, setActiveTopic] = useState<(typeof topicChips)[number]>("All");
   const [sortBy, setSortBy] = useState<SortOption>("24h Volume");
   const [activeOnly, setActiveOnly] = useState(true);
-  const [hideSports, setHideSports] = useState(false);
-  const [hideCrypto, setHideCrypto] = useState(false);
-  const [hideEarnings, setHideEarnings] = useState(false);
+  const [hideLogistics, setHideLogistics] = useState(false);
+  const [hidePlans, setHidePlans] = useState(false);
+  const [hideChaos, setHideChaos] = useState(false);
   const [minVolume, setMinVolume] = useState([0]);
-  const [isLoading, setIsLoading] = useState(true);
-  const firstLoad = useRef(true);
+
+  const topicChips = useMemo(() => {
+    const categories = Array.from(new Set(markets.map((market) => market.category)));
+    return ["All", ...categories];
+  }, [markets]);
+  const [activeTopic, setActiveTopic] = useState("All");
 
   const filteredAndSorted = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -86,15 +94,15 @@ export function BrowsePage() {
         return false;
       }
 
-      if (hideSports && market.category === "sports") {
+      if (hideLogistics && market.category === "Logistics") {
         return false;
       }
 
-      if (hideCrypto && market.category === "crypto") {
+      if (hidePlans && market.category === "Plans") {
         return false;
       }
 
-      if (hideEarnings && market.category === "earnings") {
+      if (hideChaos && market.category === "Chaos") {
         return false;
       }
 
@@ -102,7 +110,7 @@ export function BrowsePage() {
         return false;
       }
 
-      if (activeTopic !== "All" && !market.topics.some((topic) => topic.toLowerCase() === activeTopic.toLowerCase())) {
+      if (activeTopic !== "All" && market.category !== activeTopic) {
         return false;
       }
 
@@ -110,13 +118,7 @@ export function BrowsePage() {
         return true;
       }
 
-      const haystack = [
-        market.title,
-        market.subtitle,
-        market.category,
-        market.topics.join(" "),
-        market.slug.replaceAll("-", " ")
-      ]
+      const haystack = [market.title, market.subtitle, market.category, market.topics.join(" "), market.slug]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -128,37 +130,47 @@ export function BrowsePage() {
     const bySort = sortComparator(sortBy);
 
     return filtered.sort((a, b) => byTab(a, b) || bySort(a, b));
-  }, [activeOnly, activeTab, activeTopic, hideCrypto, hideEarnings, hideSports, minVolume, search, sortBy]);
+  }, [
+    markets,
+    search,
+    activeOnly,
+    hideLogistics,
+    hidePlans,
+    hideChaos,
+    minVolume,
+    activeTopic,
+    activeTab,
+    sortBy
+  ]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    const timeout = setTimeout(
-      () => {
-        setIsLoading(false);
-        firstLoad.current = false;
-      },
-      firstLoad.current ? 700 : 180
+  if (markets.length === 0) {
+    return (
+      <div className="min-h-screen">
+        <SiteHeader searchValue={search} onSearchChange={setSearch} />
+        <main className="mx-auto flex max-w-3xl flex-col items-center px-4 py-14 text-center lg:px-6">
+          <h1 className="text-2xl font-semibold tracking-tight">No markets yet</h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Upload a WhatsApp export to generate markets.
+          </p>
+          <Link href="/upload" className={`${buttonVariants()} mt-5 inline-flex`}>
+            Go to Upload
+          </Link>
+        </main>
+      </div>
     );
-    return () => clearTimeout(timeout);
-  }, [activeOnly, activeTab, activeTopic, hideCrypto, hideEarnings, hideSports, minVolume, search, sortBy]);
-
-  const resetFilters = () => {
-    setSearch("");
-    setActiveTab("Trending");
-    setActiveTopic("All");
-    setSortBy("24h Volume");
-    setActiveOnly(true);
-    setHideSports(false);
-    setHideCrypto(false);
-    setHideEarnings(false);
-    setMinVolume([0]);
-  };
+  }
 
   return (
     <div className="min-h-screen">
       <SiteHeader searchValue={search} onSearchChange={setSearch} />
 
       <main className="mx-auto max-w-7xl space-y-3 px-4 py-3 lg:px-6">
+        {bannerMessage ? (
+          <Alert className="border-emerald-300 bg-emerald-50 text-emerald-900">
+            <AlertDescription>{bannerMessage}</AlertDescription>
+          </Alert>
+        ) : null}
+
         <section className="-mx-1 flex gap-4 overflow-x-auto border-b border-border/80 px-1 pb-2">
           {browseTabs.map((tab) => (
             <button
@@ -217,16 +229,16 @@ export function BrowsePage() {
                 <Switch checked={activeOnly} onCheckedChange={setActiveOnly} />
               </label>
               <label className="flex items-center justify-between gap-2 rounded-md border border-border/70 bg-muted/30 px-2.5 py-2 text-sm">
-                Hide sports
-                <Switch checked={hideSports} onCheckedChange={setHideSports} />
+                Hide Logistics
+                <Switch checked={hideLogistics} onCheckedChange={setHideLogistics} />
               </label>
               <label className="flex items-center justify-between gap-2 rounded-md border border-border/70 bg-muted/30 px-2.5 py-2 text-sm">
-                Hide crypto
-                <Switch checked={hideCrypto} onCheckedChange={setHideCrypto} />
+                Hide Plans
+                <Switch checked={hidePlans} onCheckedChange={setHidePlans} />
               </label>
               <label className="flex items-center justify-between gap-2 rounded-md border border-border/70 bg-muted/30 px-2.5 py-2 text-sm">
-                Hide earnings
-                <Switch checked={hideEarnings} onCheckedChange={setHideEarnings} />
+                Hide Chaos
+                <Switch checked={hideChaos} onCheckedChange={setHideChaos} />
               </label>
               <div className="rounded-md border border-border/70 bg-muted/30 px-2.5 py-2">
                 <div className="mb-1 flex items-center justify-between text-sm">
@@ -236,8 +248,8 @@ export function BrowsePage() {
                 <Slider
                   value={minVolume}
                   onValueChange={setMinVolume}
-                  max={900000}
-                  step={10000}
+                  max={400000}
+                  step={5000}
                   className="mt-2"
                   aria-label="Minimum volume"
                 />
@@ -252,17 +264,25 @@ export function BrowsePage() {
             <p className="text-sm text-muted-foreground">{filteredAndSorted.length} shown</p>
           </div>
 
-          {isLoading ? (
-            <div className="market-grid grid gap-3 sm:gap-4">
-              {Array.from({ length: 10 }).map((_, index) => (
-                <MarketCardSkeleton key={`skeleton-${index}`} />
-              ))}
-            </div>
-          ) : filteredAndSorted.length === 0 ? (
+          {filteredAndSorted.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
               <h2 className="text-lg font-semibold">No markets match these filters</h2>
               <p className="mt-2 text-sm text-muted-foreground">Try widening topic/category filters or reducing min volume.</p>
-              <Button variant="outline" className="mt-4" onClick={resetFilters}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => {
+                  setSearch("");
+                  setActiveTab("Trending");
+                  setSortBy("24h Volume");
+                  setActiveOnly(true);
+                  setHideLogistics(false);
+                  setHidePlans(false);
+                  setHideChaos(false);
+                  setMinVolume([0]);
+                  setActiveTopic("All");
+                }}
+              >
                 Reset filters
               </Button>
             </div>

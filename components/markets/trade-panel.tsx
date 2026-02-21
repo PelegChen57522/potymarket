@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Market } from "@/lib/mockMarkets";
+import type { DisplayMarket } from "@/lib/markets";
 import { cn } from "@/lib/utils";
 
 type TradePanelProps = {
-  market: Market;
+  market: DisplayMarket;
   compact?: boolean;
 };
 
@@ -26,7 +26,7 @@ export function TradePanel({ market, compact = false }: TradePanelProps) {
   }, [amount, currentPrice]);
 
   const sideLabels: [string, string] =
-    market.type === "twoway" ? market.optionLabels ?? ["Up", "Down"] : ["YES", "NO"];
+    market.type === "twoway" ? market.optionLabels ?? ["Option A", "Option B"] : ["YES", "NO"];
 
   return (
     <div className={cn("rounded-xl border border-border/85 bg-card p-4", compact ? "p-3" : "p-4")}>
@@ -94,7 +94,7 @@ export function TradePanel({ market, compact = false }: TradePanelProps) {
       </div>
 
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-        Play money mode: all fills and balances are simulated for UI prototyping.
+        Play money mode: trade actions are simulated in the current prototype.
       </p>
     </div>
   );

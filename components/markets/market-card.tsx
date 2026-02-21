@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrencyCompact, formatDateChip, formatPercentFromPrice } from "@/lib/format";
-import { Market } from "@/lib/mockMarkets";
+import type { DisplayMarket } from "@/lib/markets";
 import { cn } from "@/lib/utils";
 
 const gradients = [
@@ -19,16 +19,14 @@ function hashString(value: string) {
 }
 
 type MarketCardProps = {
-  market: Market;
+  market: DisplayMarket;
   compact?: boolean;
 };
 
 export function MarketCard({ market, compact = false }: MarketCardProps) {
-  const firstLabel = market.type === "twoway" ? market.optionLabels?.[0] ?? "Up" : "YES";
-  const secondLabel = market.type === "twoway" ? market.optionLabels?.[1] ?? "Down" : "NO";
+  const firstLabel = market.type === "twoway" ? market.optionLabels?.[0] ?? "Option A" : "YES";
+  const secondLabel = market.type === "twoway" ? market.optionLabels?.[1] ?? "Option B" : "NO";
   const gradient = gradients[hashString(market.slug) % gradients.length];
-  const firstPrice = market.yesPrice;
-  const secondPrice = market.noPrice;
 
   return (
     <article
@@ -75,14 +73,14 @@ export function MarketCard({ market, compact = false }: MarketCardProps) {
             className="h-8 justify-between border-emerald-200 bg-emerald-50/70 px-2.5 text-emerald-800 transition-colors hover:bg-emerald-100 group-hover:border-emerald-300"
           >
             <span className="text-xs font-semibold">{firstLabel}</span>
-            <span className="text-xs">{Math.round(firstPrice * 100)}¢</span>
+            <span className="text-xs">{Math.round(market.yesPrice * 100)}¢</span>
           </Button>
           <Button
             variant="outline"
             className="h-8 justify-between border-rose-200 bg-rose-50/70 px-2.5 text-rose-800 transition-colors hover:bg-rose-100 group-hover:border-rose-300"
           >
             <span className="text-xs font-semibold">{secondLabel}</span>
-            <span className="text-xs">{Math.round(secondPrice * 100)}¢</span>
+            <span className="text-xs">{Math.round(market.noPrice * 100)}¢</span>
           </Button>
         </div>
       </div>

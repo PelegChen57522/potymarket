@@ -5,6 +5,7 @@ Prediction market UI prototype built with Next.js 14, TypeScript, TailwindCSS, a
 ## Run
 
 ```bash
+cp .env.local.example .env.local
 npm install
 npm run dev
 ```
@@ -16,3 +17,16 @@ Open `http://localhost:3000`.
 - `/` Markets browse
 - `/market/[slug]` Market detail
 - `/me` Portfolio
+- `/upload` WhatsApp import + LLM generation
+
+## Environment
+
+- `OPENROUTER_API_KEY` required for generating markets
+- `OPENROUTER_MODEL` optional (defaults to `stepfun/step-3.5-flash:free`)
+- `OPENROUTER_REASONING` optional (`off` or `on`, default `off`)
+- `OPENROUTER_REFERER` optional (defaults to `http://localhost:3000` in development)
+
+## Storage (dev)
+
+- Raw uploads are stored at `data/raw/*.txt`
+- Generated imports are stored at `data/imports/*.json`
