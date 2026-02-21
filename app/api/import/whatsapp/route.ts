@@ -36,7 +36,9 @@ function isAllowedOrigin(request: Request): boolean {
 
 export async function POST(request: Request) {
   try {
+    console.log("[import/whatsapp] request:start");
     if (!isAllowedOrigin(request)) {
+      console.log("[import/whatsapp] request:forbidden-origin", { origin: request.headers.get("origin") });
       return secureJson({ error: "Forbidden origin." }, { status: 403 });
     }
 
@@ -44,32 +46,49 @@ export async function POST(request: Request) {
     const file = formData.get("file");
 
     if (!(file instanceof File)) {
+      console.log("[import/whatsapp] request:no-file");
       return secureJson({ error: "No file uploaded." }, { status: 400 });
     }
+    console.log("[import/whatsapp] file:received", { name: file.name, size: file.size, type: file.type });
 
     const isTxt = TXT_FILE_PATTERN.test(file.name) || file.type === "text/plain";
     if (!isTxt) {
+      console.log("[import/whatsapp] file:invalid-type", { name: file.name, type: file.type });
       return secureJson({ error: "Please select a .txt WhatsApp export file." }, { status: 400 });
     }
 
     if (file.size <= 0) {
+      console.log("[import/whatsapp] file:empty");
       return secureJson({ error: "The uploaded file is empty." }, { status: 400 });
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
+      console.log("[import/whatsapp] file:too-large", { size: file.size });
       return secureJson({ error: "File is too large. Maximum size is 10MB." }, { status: 413 });
     }
 
     const buffer = await file.arrayBuffer();
     const chatText = new TextDecoder("utf-8").decode(buffer);
+    console.log("[import/whatsapp] file:decoded", { charCount: chatText.length });
 
     if (!chatText.trim()) {
+      console.log("[import/whatsapp] file:blank-after-trim");
       return secureJson({ error: "The uploaded file is empty." }, { status: 400 });
     }
 
     const importId = randomUUID();
+    const generationStartedAt = Date.now();
+    console.log("[import/whatsapp] generation:start", { importId });
     const { result, modelUsed, reasoningDetails } = await generateMarketsFromChat(chatText);
+    console.log("[import/whatsapp] generation:done", {
+      importId,
+      modelUsed,
+      marketCount: result.market_ideas.length,
+      elapsedMs: Date.now() - generationStartedAt
+    });
 
+    const storageStartedAt = Date.now();
+    console.log("[import/whatsapp] storage:start", { importId });
     const stored = await saveImportResult({
       importId,
       fileName: file.name,
@@ -79,7 +98,13 @@ export async function POST(request: Request) {
       markets: result.market_ideas,
       reasoning_details: reasoningDetails
     });
+    console.log("[import/whatsapp] storage:done", {
+      importId,
+      marketCount: stored.markets.length,
+      elapsedMs: Date.now() - storageStartedAt
+    });
 
+    console.log("[import/whatsapp] request:success", { importId });
     return secureJson({
       ok: true,
       importId: stored.importId,

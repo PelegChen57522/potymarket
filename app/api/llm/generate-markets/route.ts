@@ -45,7 +45,9 @@ const generateRequestSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    console.log("[api/llm/generate-markets] request:start");
     if (!isAllowedOrigin(request)) {
+      console.log("[api/llm/generate-markets] request:forbidden-origin", { origin: request.headers.get("origin") });
       return secureJson({ error: "Forbidden origin." }, { status: 403 });
     }
 
@@ -53,11 +55,21 @@ export async function POST(request: Request) {
     const parsed = generateRequestSchema.safeParse(body);
 
     if (!parsed.success) {
+      console.log("[api/llm/generate-markets] request:invalid-payload");
       return secureJson({ error: "Invalid request payload." }, { status: 400 });
     }
 
     const importId = parsed.data.importId ?? randomUUID();
+    console.log("[api/llm/generate-markets] generation:start", {
+      importId,
+      chatChars: parsed.data.chatText.length
+    });
     const { result, modelUsed, reasoningDetails } = await generateMarketsFromChat(parsed.data.chatText);
+    console.log("[api/llm/generate-markets] generation:done", {
+      importId,
+      modelUsed,
+      marketCount: result.market_ideas.length
+    });
 
     const stored = await saveImportResult({
       importId,
@@ -67,6 +79,10 @@ export async function POST(request: Request) {
       chatText: parsed.data.chatText,
       markets: result.market_ideas,
       reasoning_details: reasoningDetails
+    });
+    console.log("[api/llm/generate-markets] storage:done", {
+      importId,
+      marketCount: stored.markets.length
     });
 
     return secureJson({

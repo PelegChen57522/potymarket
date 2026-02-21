@@ -60,7 +60,6 @@ export async function createOpenRouterCompletion(params: {
   model: string;
   messages: OpenRouterMessage[];
   temperature?: number;
-  responseFormatJson?: boolean;
 }): Promise<OpenRouterCompletionResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -84,13 +83,16 @@ export async function createOpenRouterCompletion(params: {
     messages: params.messages
   };
 
-  if (params.responseFormatJson) {
-    requestBody.response_format = { type: "json_object" };
+  if (getReasoningMode() === "on") {
+    requestBody.reasoning = { enabled: true };
   }
 
-  if (getReasoningMode() === "on") {
-    requestBody.reasoning = { enabled: true, exclude: false };
-  }
+  const startedAt = Date.now();
+  console.log("[openrouter] request:start", {
+    model: params.model,
+    messageCount: params.messages.length,
+    reasoning: getReasoningMode()
+  });
 
   const response = await fetch(OPENROUTER_ENDPOINT, {
     method: "POST",
@@ -99,8 +101,17 @@ export async function createOpenRouterCompletion(params: {
   });
 
   const data = (await response.json()) as OpenRouterResponse;
+  console.log("[openrouter] request:response", {
+    model: params.model,
+    status: response.status,
+    elapsedMs: Date.now() - startedAt
+  });
 
   if (!response.ok) {
+    console.log("[openrouter] request:error-payload", {
+      model: params.model,
+      error: data.error ?? null
+    });
     throw new Error(data.error?.message ?? `OpenRouter request failed (${response.status}).`);
   }
 

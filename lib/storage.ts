@@ -125,6 +125,13 @@ export async function saveImportResult(params: {
   reasoning_details?: unknown[];
 }): Promise<StoredImport> {
   await ensureStorageDirs();
+  console.log("[storage] saveImportResult:start", {
+    importId: params.importId,
+    fileName: params.fileName,
+    fileSize: params.fileSize,
+    markets: params.markets.length,
+    dataDir: DATA_DIR
+  });
 
   const rawPath = rawTextPath(params.importId);
   await writeFile(rawPath, params.chatText, { encoding: "utf8", mode: 0o600 });
@@ -144,6 +151,7 @@ export async function saveImportResult(params: {
     encoding: "utf8",
     mode: 0o600
   });
+  console.log("[storage] saveImportResult:done", { importId: params.importId });
   return storedImport;
 }
 
@@ -168,10 +176,12 @@ export async function getLatestImport(): Promise<StoredImport | null> {
   ).filter((entry): entry is StoredImport => Boolean(entry));
 
   if (imports.length === 0) {
+    console.log("[storage] getLatestImport:none", { dataDir: DATA_DIR });
     return null;
   }
 
   imports.sort((a, b) => +new Date(b.uploadedAt) - +new Date(a.uploadedAt));
+  console.log("[storage] getLatestImport:found", { importId: imports[0].importId, dataDir: DATA_DIR });
   return imports[0];
 }
 

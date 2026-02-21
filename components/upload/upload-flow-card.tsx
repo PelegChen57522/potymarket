@@ -52,6 +52,7 @@ export function UploadFlowCard() {
   const [errorMessage, setErrorMessage] = useState("");
   const [fileMeta, setFileMeta] = useState<UploadedFileMeta | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const log = (...args: unknown[]) => console.log("[upload-flow]", ...args);
 
   const clearUploadTimer = () => {
     if (timerRef.current) {
@@ -68,6 +69,7 @@ export function UploadFlowCard() {
   };
 
   const resetToIdle = () => {
+    log("resetToIdle");
     clearUploadTimer();
     abortRequest();
     setState("idle");
@@ -80,6 +82,7 @@ export function UploadFlowCard() {
   };
 
   const startProgressSimulation = () => {
+    log("startProgressSimulation");
     clearUploadTimer();
     let current = 0;
 
@@ -95,6 +98,7 @@ export function UploadFlowCard() {
   };
 
   const submitFile = async (file: File) => {
+    log("submitFile:start", { name: file.name, size: file.size, type: file.type });
     const controller = new AbortController();
     requestRef.current = controller;
 
@@ -108,21 +112,28 @@ export function UploadFlowCard() {
     });
 
     const payload = (await response.json().catch(() => ({}))) as { error?: string; ok?: boolean; importId?: string };
+    log("submitFile:response", { status: response.status, ok: payload.ok, importId: payload.importId ?? null });
 
     if (!response.ok || !payload.ok || !payload.importId) {
+      log("submitFile:failed", { status: response.status, error: payload.error ?? "unknown" });
       throw new Error(payload.error ?? "Failed to upload WhatsApp export.");
     }
+
+    log("submitFile:success", { importId: payload.importId });
   };
 
   const handleSelectAndUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
+      log("handleSelectAndUpload:no-file");
       return;
     }
+    log("handleSelectAndUpload:selected", { name: file.name, size: file.size, type: file.type });
 
     const isTxtFile = /\.txt$/i.test(file.name) || file.type === "text/plain";
 
     if (!isTxtFile) {
+      log("handleSelectAndUpload:invalid-file-type", { name: file.name, type: file.type });
       setState("error");
       setProgress(0);
       setErrorMessage("Please select a .txt WhatsApp export file.");
@@ -137,19 +148,23 @@ export function UploadFlowCard() {
 
     try {
       await submitFile(file);
+      log("handleSelectAndUpload:upload-complete");
       clearUploadTimer();
       setProgress(100);
       setState("success");
       setFileMeta({ name: file.name, size: file.size, uploadedAt: new Date() });
 
       window.setTimeout(() => {
+        log("handleSelectAndUpload:redirect", "/?imported=1");
         router.push("/?imported=1");
       }, 650);
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
+        log("handleSelectAndUpload:aborted");
         return;
       }
 
+      log("handleSelectAndUpload:error", error instanceof Error ? error.message : error);
       clearUploadTimer();
       setProgress(0);
       setState("error");
@@ -160,7 +175,9 @@ export function UploadFlowCard() {
   };
 
   useEffect(() => {
+    log("mounted");
     return () => {
+      log("unmounted");
       clearUploadTimer();
       abortRequest();
     };
